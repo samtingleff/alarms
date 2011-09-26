@@ -22,7 +22,8 @@ public class Controller implements Runnable {
 		switch (event.getSignal()) {
 		case AddOneTimeAlarm:
 			AlarmEvent ae = view.showOneTimeDialog();
-			model.addEvent(ae);
+			if (ae != null)
+				model.addEvent(ae);
 			break;
 		case Notification:
 			view.showMessage(((AppEvent<String>) event).getPayload());
