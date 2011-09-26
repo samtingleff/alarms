@@ -21,12 +21,11 @@ public class OneTimeAlarmWidget extends Dialog {
 
 	private String message;
 
-	public OneTimeAlarmWidget(Shell parent) {
-		super(parent);
-	}
+	private int id;
 
-	public OneTimeAlarmWidget(Shell parent, int style) {
-		super(parent, style);
+	public OneTimeAlarmWidget(Shell parent, int id) {
+		super(parent);
+		this.id = id;
 	}
 
 	public AlarmEvent open() {
@@ -113,7 +112,7 @@ public class OneTimeAlarmWidget extends Dialog {
 		if ((time != null) && (time.length() > 0) && (message != null)) {
 			Span span = Chronic.parse(time);
 			if (span != null)
-				return new AlarmEvent(span, message);
+				return new AlarmEvent(id, span, message);
 			else
 				return null;
 		} else

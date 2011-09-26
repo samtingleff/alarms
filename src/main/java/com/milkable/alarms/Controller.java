@@ -1,6 +1,10 @@
 package com.milkable.alarms;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Controller implements Runnable {
+	private AtomicInteger ai = new AtomicInteger();
+
 	private Model model;
 
 	private View view;
@@ -21,12 +25,15 @@ public class Controller implements Runnable {
 	public void event(AppEvent event) {
 		switch (event.getSignal()) {
 		case AddOneTimeAlarm:
-			AlarmEvent ae = view.showOneTimeDialog();
-			if (ae != null)
+			AlarmEvent ae = view.showOneTimeDialog(ai.incrementAndGet());
+			if (ae != null) {
 				model.addEvent(ae);
+				view.addEvent(ae);
+			}
 			break;
 		case Notification:
-			view.showMessage(((AppEvent<String>) event).getPayload());
+			view.showMessage(((AppEvent<AlarmEvent>) event).getPayload().getMessage());
+			view.removeEvent(((AppEvent<AlarmEvent>) event).getPayload());
 			break;
 		case Quit:
 			System.exit(0);

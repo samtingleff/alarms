@@ -1,5 +1,8 @@
 package com.milkable.alarms;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -15,11 +18,18 @@ import com.milkable.alarms.widgets.MessageWidget;
 import com.milkable.alarms.widgets.OneTimeAlarmWidget;
 
 public class View {
+
+	private List<SubMenuItem> activeAlarmItems = new LinkedList<SubMenuItem>();
+
 	private Controller ctl;
 
-	Display display;
+	private Display display;
 
-	Shell shell;
+	private Shell shell;
+
+	private Menu menu;
+
+	private Menu submenu;
 
 	public View() {
 	}
@@ -39,7 +49,7 @@ public class View {
 			public void handleEvent(Event event) {
 			}
 		});
-		final Menu menu = new Menu(shell, SWT.POP_UP);
+		menu = new Menu(shell, SWT.POP_UP);
 
 		// Add one-time alarm
 		MenuItem oneTimeAlarm = new MenuItem(menu, SWT.PUSH);
@@ -49,6 +59,13 @@ public class View {
 				ctl.event(new AppEvent<Object>(Signal.AddOneTimeAlarm, null));
 			}
 		});
+
+		// Active alarms
+		final MenuItem alarmMenuItem = new MenuItem(menu, SWT.CASCADE);
+		alarmMenuItem.setText("&Active alarms");
+		submenu = new Menu(shell, SWT.DROP_DOWN);
+		alarmMenuItem.setMenu(submenu);
+
 		// Quit menu item
 		MenuItem quit = new MenuItem(menu, SWT.PUSH);
 		quit.setText("Quit");
@@ -71,14 +88,32 @@ public class View {
 		display.dispose();
 	}
 
-	public AlarmEvent showOneTimeDialog() {
-		OneTimeAlarmWidget w = new OneTimeAlarmWidget(shell);
+	public AlarmEvent showOneTimeDialog(int id) {
+		OneTimeAlarmWidget w = new OneTimeAlarmWidget(shell, id);
 		AlarmEvent ae = w.open();
 		return ae;
 	}
 
+	public void addEvent(AlarmEvent ae) {
+		final MenuItem childItem = new MenuItem(submenu, SWT.PUSH);
+		childItem.setText(ae.getTime().toString());
+		activeAlarmItems.add(new SubMenuItem(childItem, ae.getId()));
+	}
+
+	public void removeEvent(AlarmEvent ae) {
+		for (final SubMenuItem item : activeAlarmItems) {
+			if (item.id == ae.getId()) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						item.item.dispose();
+					}
+				});
+			}
+		}
+	}
+
 	public void showMessage(final String msg) {
-		display.asyncExec(new Runnable() {
+		display.syncExec(new Runnable() {
 			public void run() {
 				try {
 					MessageWidget mw = new MessageWidget(display, msg);
@@ -88,5 +123,16 @@ public class View {
 				}
 			}
 		});
+	}
+
+	private static class SubMenuItem {
+		public MenuItem item;
+
+		public int id;
+
+		public SubMenuItem(MenuItem item, int id) {
+			this.item = item;
+			this.id = id;
+		}
 	}
 }
