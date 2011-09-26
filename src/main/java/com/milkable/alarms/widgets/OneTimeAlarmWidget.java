@@ -41,7 +41,10 @@ public class OneTimeAlarmWidget extends Dialog {
 		timeLabel.setText("When would you like the alarm?");
 
 		final Text timeText = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		timeText.setText("in ");
+		timeText.selectAll();
 		timeText.setLayoutData(new GridData(GridData.FILL_BOTH));
+
 		Label messageLabel = new Label(shell, SWT.NULL);
 		messageLabel.setText("Event");
 
@@ -97,7 +100,6 @@ public class OneTimeAlarmWidget extends Dialog {
 			}
 		});
 
-		timeText.setText("");
 		messageText.setText("");
 		shell.pack();
 		shell.open();
