@@ -54,15 +54,14 @@ public class OneTimeAlarmWidget extends Dialog {
 		final Button buttonOK = new Button(shell, SWT.PUSH);
 		buttonOK.setText("Ok");
 		buttonOK.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		Button buttonCancel = new Button(shell, SWT.PUSH);
+		final Button buttonCancel = new Button(shell, SWT.PUSH);
 		buttonCancel.setText("Cancel");
 		shell.setDefaultButton(buttonOK);
 		timeText.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event event) {
 				try {
-					time = timeText.getText();
-					if ((time.length() > 0) && (message.length() > 0))
-						buttonOK.setEnabled(true);
+					onTextFieldChange(timeText.getText(),
+							messageText.getText(), buttonOK, buttonCancel);
 				} catch (Exception e) {
 					buttonOK.setEnabled(false);
 				}
@@ -71,9 +70,8 @@ public class OneTimeAlarmWidget extends Dialog {
 		messageText.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event event) {
 				try {
-					message = messageText.getText();
-					if ((time.length() > 0) && (message.length() > 0))
-						buttonOK.setEnabled(true);
+					onTextFieldChange(timeText.getText(),
+							messageText.getText(), buttonOK, buttonCancel);
 				} catch (Exception e) {
 					buttonOK.setEnabled(false);
 				}
@@ -82,6 +80,8 @@ public class OneTimeAlarmWidget extends Dialog {
 
 		buttonOK.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
+				time = timeText.getText();
+				message = messageText.getText();
 				shell.dispose();
 			}
 		});
@@ -112,9 +112,20 @@ public class OneTimeAlarmWidget extends Dialog {
 
 		if ((time != null) && (time.length() > 0) && (message != null)) {
 			Span span = Chronic.parse(time);
-			return new AlarmEvent(span, message);
+			if (span != null)
+				return new AlarmEvent(span, message);
+			else
+				return null;
 		} else
 			return null;
 	}
 
+	private void onTextFieldChange(String time, String message,
+			Button buttonOK, Button buttonCancel) {
+		if ((time.length() > 0) && (message.length() > 0)
+				&& (Chronic.parse(time) != null))
+			buttonOK.setEnabled(true);
+		else
+			buttonOK.setEnabled(false);
+	}
 }
