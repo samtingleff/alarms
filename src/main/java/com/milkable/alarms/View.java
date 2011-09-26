@@ -41,7 +41,7 @@ public class View {
 	public void init() {
 		display = new Display();
 		shell = new Shell(display);
-		Image image = new Image(display, 16, 16);
+		Image image = new Image(display, getClass().getResourceAsStream("/images/clock-16x16.gif"));
 		final Tray tray = display.getSystemTray();
 		final TrayItem item = new TrayItem(tray, SWT.NONE);
 		item.setToolTipText("Alarms");
