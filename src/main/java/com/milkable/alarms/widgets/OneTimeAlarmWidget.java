@@ -56,7 +56,7 @@ public class OneTimeAlarmWidget extends Dialog {
 		buttonOK.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		Button buttonCancel = new Button(shell, SWT.PUSH);
 		buttonCancel.setText("Cancel");
-
+		shell.setDefaultButton(buttonOK);
 		timeText.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event event) {
 				try {
