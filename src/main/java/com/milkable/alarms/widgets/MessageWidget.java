@@ -19,8 +19,9 @@ public class MessageWidget {
 		try {
 			Shell shell = new Shell(parent);
 			MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION
-					| SWT.YES | SWT.NO);
+					| SWT.YES);
 			messageBox.setMessage(message);
+			messageBox.setText(message);
 			int rc = messageBox.open();
 			shell.dispose();
 		} catch (Exception e) {
